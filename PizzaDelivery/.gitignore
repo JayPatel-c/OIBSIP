@@ -1,0 +1,41 @@
+# Dependency directories
+# (Tens of thousands of modular files that can be installed locally with 'npm install')
+backend/node_modules/
+frontend/node_modules/
+
+# Environment variables & private credentials (CRITICAL: Never push these!)
+backend/.env
+frontend/.env
+*.env
+*.env.local
+*.env.*.local
+
+# Production build outputs
+frontend/dist/
+frontend/build/
+
+# Editor and IDE configurations
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Operating system files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+logs/
+*.log
