@@ -55,7 +55,8 @@ exports.register = async (req, res) => {
     const verifyUrl = `${req.protocol}://${req.get('host')}/api/auth/verify/${verifyToken}`;
     
     // For frontend client-side navigation
-    const clientVerifyUrl = `http://localhost:5173/verify-email/${verifyToken}`;
+    const hostIp = req.get('host').split(':')[0];
+    const clientVerifyUrl = `http://${hostIp}:5173/verify-email/${verifyToken}`;
 
     const message = `Welcome to Pizza Shop, ${name}!\n\nPlease verify your email by clicking the link below:\n\n${clientVerifyUrl}\n\nIf you did not request this, please ignore this email.`;
     const html = `
@@ -74,16 +75,21 @@ exports.register = async (req, res) => {
     `;
 
     try {
-      await sendEmail({
+      const emailResult = await sendEmail({
         email: user.email,
         subject: '🍕 Pizza Crafters Account Verification',
         message,
         html,
       });
 
+      const isRealSend = emailResult && !emailResult.fallback;
+
       res.status(201).json({
         success: true,
-        message: 'Registration successful! Verification email sent.',
+        emailSent: isRealSend,
+        message: isRealSend
+          ? 'Registration successful! Verification email sent.'
+          : 'Registration successful! (Developer fallback active)',
       });
     } catch (err) {
       // Clear token fields and save
@@ -191,7 +197,8 @@ exports.forgotPassword = async (req, res) => {
     await user.save();
 
     // Create reset URL
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+    const hostIp = req.get('host').split(':')[0];
+    const resetUrl = `http://${hostIp}:5173/reset-password/${resetToken}`;
 
     const message = `You requested a password reset on Pizza Shop.\n\nPlease reset your password by clicking the link below:\n\n${resetUrl}\n\nThis link is valid for 1 hour. If you did not request this, please ignore.`;
     const html = `
@@ -210,14 +217,22 @@ exports.forgotPassword = async (req, res) => {
     `;
 
     try {
-      await sendEmail({
+      const emailResult = await sendEmail({
         email: user.email,
         subject: '🍕 Pizza Crafters Password Reset',
         message,
         html,
       });
 
-      res.status(200).json({ success: true, message: 'Password reset link sent to email' });
+      const isRealSend = emailResult && !emailResult.fallback;
+
+      res.status(200).json({
+        success: true,
+        emailSent: isRealSend,
+        message: isRealSend
+          ? 'Password reset link sent to email'
+          : 'Password reset fallback activated: check server console for the link'
+      });
     } catch (err) {
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;

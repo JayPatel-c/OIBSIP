@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }) => {
       const res = await api.post('/auth/register', { name, email, password, phone, role });
       return {
         success: true,
+        emailSent: res.data.emailSent,
         message: res.data.message || 'Verification link sent to your email. Please verify before logging in!',
       };
     } catch (err) {

@@ -18,7 +18,7 @@ const Navbar = () => {
     <nav className="navbar">
       <div className="navbar-container container">
         <Link to="/" className="navbar-logo">
-          Pizza Crafters
+          🍕 Pizza Crafters
         </Link>
 
         <div className="navbar-menu">
