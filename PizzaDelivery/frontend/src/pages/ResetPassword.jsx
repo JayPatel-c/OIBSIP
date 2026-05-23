@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -12,6 +13,7 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const { loadUser } = useAuth();
   const navigate = useNavigate();
+  useScrollReveal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ const ResetPassword = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card scroll-reveal-scale">
         <h2 className="auth-title">Set New Password</h2>
         <p className="auth-subtitle">Choose a strong, secure password for your account</p>
 

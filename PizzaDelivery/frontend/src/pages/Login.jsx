@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const Login = () => {
   const [loadingLocal, setLoadingLocal] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  useScrollReveal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,7 +56,7 @@ const Login = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card scroll-reveal-scale">
         <h2 className="auth-title">Welcome Back</h2>
         <p className="auth-subtitle">Sign in to your Pizza Crafters account</p>
 

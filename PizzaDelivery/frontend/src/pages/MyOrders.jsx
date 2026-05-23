@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/axios';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  useScrollReveal();
 
   const fetchOrders = async (showLoading = true) => {
     if (showLoading) setLoading(true);
@@ -54,7 +56,7 @@ const MyOrders = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <div style={{ marginBottom: '35px' }}>
+      <div className="scroll-reveal" style={{ marginBottom: '35px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px' }}>
           My Orders
         </h1>
@@ -73,7 +75,7 @@ const MyOrders = () => {
       {error && <div className="alert alert-danger">{error}</div>}
 
       {!loading && !error && orders.length === 0 && (
-        <div className="text-center card" style={{ padding: '60px 20px', color: 'var(--text-secondary)' }}>
+        <div className="text-center card scroll-reveal-scale" style={{ padding: '60px 20px', color: 'var(--text-secondary)' }}>
           
           <h3>No Orders Found</h3>
           <p style={{ marginTop: '10px', marginBottom: '20px' }}>You haven't ordered any pizzas yet. Let's make one now!</p>
@@ -85,10 +87,14 @@ const MyOrders = () => {
 
       {!loading && !error && orders.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-          {orders.map((order) => {
+          {orders.map((order, index) => {
             const currentStepNum = getStatusStep(order.status);
             return (
-              <div key={order._id} className="order-tracker-card card animate-fade-in">
+              <div
+                key={order._id}
+                className="order-tracker-card card card-animated animate-cascade"
+                style={{ animationDelay: `${index * 0.12}s` }}
+              >
                 {/* Header info */}
                 <div className="order-tracker-header flex-between" style={{ flexWrap: 'wrap', gap: '15px', borderBottom: '1px solid var(--border)', paddingBottom: '15px', marginBottom: '20px' }}>
                   <div>
@@ -115,8 +121,8 @@ const MyOrders = () => {
                 {/* Items description */}
                 <div className="order-tracker-items" style={{ marginBottom: '25px', padding: '10px 15px', background: 'rgba(255,255,255,0.02)', borderRadius: '5px' }}>
                   <h5 style={{ fontWeight: 600, marginBottom: '10px' }}>Items</h5>
-                  {order.items.map((item, index) => (
-                    <div key={index} style={{ fontSize: '14px', marginBottom: '8px', lineHeight: '1.4' }}>
+                  {order.items.map((item, itemIndex) => (
+                    <div key={itemIndex} style={{ fontSize: '14px', marginBottom: '8px', lineHeight: '1.4' }}>
                       {item.isCustom ? (
                         <div>
                           <strong>Custom Pizza</strong> (₹{item.price})

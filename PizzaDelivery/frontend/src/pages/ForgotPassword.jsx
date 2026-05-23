@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -8,6 +9,7 @@ const ForgotPassword = () => {
   const [success, setSuccess] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  useScrollReveal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,10 +32,10 @@ const ForgotPassword = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card scroll-reveal-scale">
         {success ? (
           <div className="auth-success-state" style={{ textAlign: 'center', padding: '10px 0' }}>
-            <div className="success-icon-wrapper" style={{
+            <div className="success-icon-wrapper animate-float" style={{
               width: '80px',
               height: '80px',
               borderRadius: '50%',

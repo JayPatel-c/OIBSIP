@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const BuildPizza = () => {
   const [ingredients, setIngredients] = useState({ bases: [], sauces: [], cheese: [], veggies: [] });
@@ -17,6 +18,7 @@ const BuildPizza = () => {
   const baseCost = 150; 
   const [currentStep, setCurrentStep] = useState(1); // Steps: 1 (Base), 2 (Sauce), 3 (Cheese), 4 (Veggies), 5 (Review)
   const navigate = useNavigate();
+  useScrollReveal();
 
   useEffect(() => {
     const fetchIngredients = async () => {
@@ -92,7 +94,7 @@ const BuildPizza = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <div style={{ marginBottom: '35px' }}>
+      <div className="scroll-reveal" style={{ marginBottom: '35px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px' }}>
           Custom Pizza Builder
         </h1>
@@ -113,7 +115,7 @@ const BuildPizza = () => {
       {!loading && !error && (
         <div className="builder-layout">
           {/* Progress Bar / Steps */}
-          <div className="builder-progress-bar">
+          <div className="builder-progress-bar scroll-reveal" data-delay="100">
             {steps.map((s) => (
               <button
                 key={s.num}
@@ -130,18 +132,19 @@ const BuildPizza = () => {
 
           <div className="builder-grid">
             {/* Left Side: Step Content Panels */}
-            <div className="builder-panel card">
+            <div className="builder-panel card scroll-reveal-left" data-delay="200">
               {/* Step 1: Bases */}
               {currentStep === 1 && (
                 <div>
                   <h2 className="step-heading">Step 1: Choose Your Pizza Base</h2>
                   <p className="step-subheading">Select one fresh gourmet crust option from below:</p>
-                  <div className="ingredients-selector-list">
-                    {ingredients.bases.map((base) => (
+                  <div className="ingredients-selector-list stagger-children">
+                    {ingredients.bases.map((base, i) => (
                       <div
                         key={base._id}
                         onClick={() => setSelectedBase(base)}
-                        className={`ingredient-option-card ${selectedBase?._id === base._id ? 'selected' : ''}`}
+                        className={`ingredient-option-card scroll-reveal ${selectedBase?._id === base._id ? 'selected' : ''}`}
+                        data-delay={i * 80}
                       >
                         <div className="flex-between">
                           <strong>{base.name}</strong>
@@ -159,12 +162,13 @@ const BuildPizza = () => {
                 <div>
                   <h2 className="step-heading">Step 2: Choose Your Pizza Sauce</h2>
                   <p className="step-subheading">Select your signature sauce coating base flavor:</p>
-                  <div className="ingredients-selector-list">
-                    {ingredients.sauces.map((sauce) => (
+                  <div className="ingredients-selector-list stagger-children">
+                    {ingredients.sauces.map((sauce, i) => (
                       <div
                         key={sauce._id}
                         onClick={() => setSelectedSauce(sauce)}
-                        className={`ingredient-option-card ${selectedSauce?._id === sauce._id ? 'selected' : ''}`}
+                        className={`ingredient-option-card scroll-reveal ${selectedSauce?._id === sauce._id ? 'selected' : ''}`}
+                        data-delay={i * 80}
                       >
                         <div className="flex-between">
                           <strong>{sauce.name}</strong>
@@ -182,12 +186,13 @@ const BuildPizza = () => {
                 <div>
                   <h2 className="step-heading">Step 3: Select Cheese Type</h2>
                   <p className="step-subheading">Artisan real cheese melting options:</p>
-                  <div className="ingredients-selector-list">
-                    {ingredients.cheese.map((ch) => (
+                  <div className="ingredients-selector-list stagger-children">
+                    {ingredients.cheese.map((ch, i) => (
                       <div
                         key={ch._id}
                         onClick={() => setSelectedCheese(ch)}
-                        className={`ingredient-option-card ${selectedCheese?._id === ch._id ? 'selected' : ''}`}
+                        className={`ingredient-option-card scroll-reveal ${selectedCheese?._id === ch._id ? 'selected' : ''}`}
+                        data-delay={i * 80}
                       >
                         <div className="flex-between">
                           <strong>{ch.name}</strong>
@@ -205,14 +210,15 @@ const BuildPizza = () => {
                 <div>
                   <h2 className="step-heading">Step 4: Opt Veggies & Premium Meats</h2>
                   <p className="step-subheading">Layer as many fresh toppings as you like:</p>
-                  <div className="ingredients-selector-list select-multi">
-                    {ingredients.veggies.map((veg) => {
+                  <div className="ingredients-selector-list select-multi stagger-children">
+                    {ingredients.veggies.map((veg, i) => {
                       const isSelected = selectedVeggies.some((v) => v._id === veg._id);
                       return (
                         <div
                           key={veg._id}
                           onClick={() => handleVeggieToggle(veg)}
-                          className={`ingredient-option-card multi-select ${isSelected ? 'selected' : ''}`}
+                          className={`ingredient-option-card multi-select scroll-reveal ${isSelected ? 'selected' : ''}`}
+                          data-delay={i * 80}
                         >
                           <div className="flex-between">
                             <strong>{veg.name}</strong>
@@ -234,7 +240,7 @@ const BuildPizza = () => {
                     Double check your pizza recipe combinations below:
                   </p>
 
-                  <div className="review-box" style={{ maxWidth: '400px', margin: '0 auto 30px', textAlign: 'left' }}>
+                  <div className="review-box scroll-reveal-scale animate-glow" style={{ maxWidth: '400px', margin: '0 auto 30px', textAlign: 'left' }}>
                     <p>🔥 <strong>Crust:</strong> {selectedBase?.name}</p>
                     <p>🍅 <strong>Sauce:</strong> {selectedSauce?.name}</p>
                     <p>🧀 <strong>Cheese:</strong> {selectedCheese?.name}</p>
@@ -272,7 +278,7 @@ const BuildPizza = () => {
             </div>
 
             {/* Right Side: Running Receipt Summary */}
-            <div className="builder-summary-panel card">
+            <div className="builder-summary-panel card scroll-reveal-right" data-delay="300">
               <h3 style={{ borderBottom: '1px solid var(--border)', paddingBottom: '15px', marginBottom: '15px' }}>
                 Order Summary
               </h3>

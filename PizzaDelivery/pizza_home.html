@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PizzaCo — Crafted for you</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EFE0;
+    --ink: #1A1208;
+    --ember: #C94A1A;
+    --gold: #C98B2A;
+    --ash: #8A7D6A;
+    --smoke: #2E2415;
+    --warm-mid: #3D2E1A;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { font-size: 16px; background: var(--ink); }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--ink);
+    color: var(--cream);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  #cursor {
+    position: fixed;
+    width: 10px; height: 10px;
+    background: var(--ember);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width .3s, height .3s, background .3s;
+    mix-blend-mode: normal;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(201,74,26,0.45);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width .5s cubic-bezier(.25,.46,.45,.94), height .5s cubic-bezier(.25,.46,.45,.94), border-color .3s;
+  }
+  body:has(a:hover) #cursor-ring,
+  body:has(button:hover) #cursor-ring { width: 56px; height: 56px; border-color: var(--ember); }
+  body:has(a:hover) #cursor,
+  body:has(button:hover) #cursor { background: var(--gold); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--ink); }
+  ::-webkit-scrollbar-thumb { background: var(--ember); }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 28px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    mix-blend-mode: normal;
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; letter-spacing: 3px;
+    color: var(--cream); text-transform: uppercase;
+  }
+  .nav-logo em { color: var(--ember); font-style: italic; }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(245,239,224,0.55); text-decoration: none;
+    transition: color .3s;
+  }
+  .nav-links a:hover { color: var(--cream); }
+  .nav-cta {
+    background: transparent;
+    border: 1px solid rgba(201,74,26,0.5);
+    color: var(--cream);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    padding: 10px 24px; border-radius: 0;
+    cursor: none; transition: background .3s, border-color .3s;
+  }
+  .nav-cta:hover { background: var(--ember); border-color: var(--ember); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    width: 100vw; height: 100vh;
+    display: flex; align-items: flex-end;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 60% at 65% 45%, rgba(201,74,26,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(201,139,42,0.07) 0%, transparent 60%);
+  }
+  .hero-grain {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  }
+
+  /* Big pizza circle — parallax layer */
+  .hero-circle {
+    position: absolute;
+    right: -80px; top: 50%;
+    transform: translateY(-50%);
+    width: 620px; height: 620px;
+    border-radius: 50%;
+    background: var(--smoke);
+    border: 1px solid rgba(201,74,26,0.2);
+    will-change: transform;
+  }
+  .hero-circle-inner {
+    position: absolute; inset: 40px;
+    border-radius: 50%;
+    background: var(--warm-mid);
+    border: 1px solid rgba(201,139,42,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 220px; line-height: 1;
+    user-select: none;
+    will-change: transform;
+  }
+  .hero-circle-ring {
+    position: absolute;
+    width: 720px; height: 720px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,74,26,0.08);
+    right: -130px; top: 50%;
+    transform: translateY(-50%);
+    will-change: transform;
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 48px 80px;
+    max-width: 620px;
+  }
+  .hero-eyebrow {
+    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--ember); margin-bottom: 20px;
+    opacity: 0; transform: translateY(12px);
+  }
+  .hero-h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 8vw, 108px);
+    font-weight: 300; line-height: 0.92;
+    letter-spacing: -2px; color: var(--cream);
+    opacity: 0; transform: translateY(30px);
+  }
+  .hero-h1 em { font-style: italic; color: var(--ember); }
+  .hero-sub {
+    margin-top: 28px;
+    font-size: 13px; line-height: 1.8;
+    color: rgba(245,239,224,0.45); max-width: 380px;
+    opacity: 0; transform: translateY(16px);
+  }
+  .hero-actions {
+    margin-top: 44px; display: flex; gap: 20px; align-items: center;
+    opacity: 0; transform: translateY(16px);
+  }
+  .btn-ember {
+    background: var(--ember); color: var(--cream);
+    border: none; font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+    padding: 14px 36px; cursor: none;
+    transition: background .3s, transform .2s;
+  }
+  .btn-ember:hover { background: #a83a13; transform: translateY(-1px); }
+  .btn-ghost-text {
+    background: none; border: none; font-family: 'Syne', sans-serif;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(245,239,224,0.45); cursor: none;
+    transition: color .3s; display: flex; align-items: center; gap: 10px;
+  }
+  .btn-ghost-text:hover { color: var(--cream); }
+  .btn-ghost-text::after {
+    content: ''; display: block; width: 28px; height: 1px;
+    background: currentColor; transition: width .3s;
+  }
+  .btn-ghost-text:hover::after { width: 44px; }
+
+  .hero-scroll-hint {
+    position: absolute; bottom: 36px; right: 48px;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: rgba(245,239,224,0.25);
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0;
+  }
+  .scroll-line {
+    width: 40px; height: 1px; background: rgba(245,239,224,0.2);
+    position: relative; overflow: hidden;
+  }
+  .scroll-line::after {
+    content: ''; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: var(--ember);
+    animation: scrollLine 2s ease-in-out infinite 1.5s;
+  }
+  @keyframes scrollLine { 0%{left:-100%} 100%{left:100%} }
+
+  /* MARQUEE BAND */
+  .marquee-section {
+    width: 100%; overflow: hidden;
+    border-top: 1px solid rgba(245,239,224,0.06);
+    border-bottom: 1px solid rgba(245,239,224,0.06);
+    padding: 18px 0; background: var(--smoke);
+  }
+  .marquee-track {
+    display: flex; gap: 60px; white-space: nowrap;
+    animation: marqueeScroll 18s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; font-weight: 300; letter-spacing: 3px;
+    text-transform: uppercase; color: rgba(245,239,224,0.35);
+    display: flex; align-items: center; gap: 20px;
+  }
+  .marquee-dot { width: 4px; height: 4px; background: var(--ember); border-radius: 50%; }
+  @keyframes marqueeScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+  /* ABOUT / PHILOSOPHY SECTION */
+  .philosophy {
+    padding: 160px 48px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+    align-items: center; max-width: 1200px; margin: 0 auto;
+  }
+  .phil-left .overline {
+    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--ember); margin-bottom: 24px; display: block;
+    opacity: 0; transform: translateX(-20px);
+  }
+  .phil-h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 5vw, 68px);
+    font-weight: 300; line-height: 1.05; letter-spacing: -1px;
+    opacity: 0; transform: translateY(24px);
+  }
+  .phil-h2 em { font-style: italic; color: var(--gold); }
+  .phil-right { opacity: 0; transform: translateY(24px); }
+  .phil-body {
+    font-size: 14px; line-height: 2;
+    color: rgba(245,239,224,0.5); margin-bottom: 40px;
+  }
+  .phil-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  .phil-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px; font-weight: 300; color: var(--cream);
+    letter-spacing: -1px; line-height: 1;
+  }
+  .phil-stat-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--ash); margin-top: 6px;
+  }
+  .phil-stat-line {
+    width: 32px; height: 1px; background: var(--ember); margin-top: 12px;
+  }
+
+  /* MENU SECTION */
+  .menu-section {
+    padding: 80px 0 160px;
+    overflow: hidden;
+  }
+  .menu-header {
+    padding: 0 48px; margin-bottom: 64px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+  }
+  .menu-h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 4.5vw, 60px);
+    font-weight: 300; letter-spacing: -1px;
+    opacity: 0; transform: translateY(20px);
+  }
+  .menu-see-all {
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--ash); text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: color .3s; cursor: none;
+    opacity: 0;
+  }
+  .menu-see-all:hover { color: var(--cream); }
+  .menu-see-all::after {
+    content: ''; width: 24px; height: 1px;
+    background: currentColor; display: block; transition: width .3s;
+  }
+  .menu-see-all:hover::after { width: 40px; }
+
+  .menu-cards {
+    display: flex; gap: 2px; padding: 0 48px;
+  }
+  .menu-card {
+    flex: 1; position: relative;
+    height: 500px; overflow: hidden;
+    background: var(--smoke);
+    cursor: none;
+    transition: flex .6s cubic-bezier(.25,.46,.45,.94);
+    opacity: 0; transform: translateY(40px);
+  }
+  .menu-card:hover { flex: 2.4; }
+  .menu-card-bg {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 120px;
+    transition: transform .8s cubic-bezier(.25,.46,.45,.94), font-size .6s;
+  }
+  .menu-card:hover .menu-card-bg { transform: scale(1.08); font-size: 140px; }
+  .menu-card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(26,18,8,0.95) 0%, rgba(26,18,8,0.3) 50%, transparent 100%);
+  }
+  .menu-card-content {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 28px 24px;
+  }
+  .menu-card-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 400; color: var(--cream);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .menu-card-price {
+    font-size: 12px; color: var(--gold); letter-spacing: 2px;
+    margin-top: 4px;
+  }
+  .menu-card-tags {
+    display: flex; gap: 6px; margin-top: 10px;
+    opacity: 0; transform: translateY(8px);
+    transition: opacity .4s, transform .4s;
+  }
+  .menu-card:hover .menu-card-tags { opacity: 1; transform: translateY(0); }
+  .tag-pill {
+    font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+    border: 1px solid rgba(245,239,224,0.2);
+    color: rgba(245,239,224,0.6); padding: 4px 10px;
+  }
+  .tag-pill.hot { border-color: rgba(201,74,26,0.5); color: var(--ember); }
+
+  /* PROCESS SECTION */
+  .process-section {
+    padding: 160px 48px;
+    border-top: 1px solid rgba(245,239,224,0.06);
+    max-width: 1200px; margin: 0 auto;
+  }
+  .process-header {
+    display: flex; gap: 80px; align-items: flex-start; margin-bottom: 100px;
+  }
+  .process-h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 4vw, 56px);
+    font-weight: 300; letter-spacing: -1px; flex: 1;
+    opacity: 0; transform: translateY(20px);
+  }
+  .process-intro {
+    flex: 1; padding-top: 12px;
+    font-size: 13px; line-height: 2;
+    color: rgba(245,239,224,0.45);
+    opacity: 0; transform: translateY(20px);
+  }
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px;
+  }
+  .step-item { opacity: 0; transform: translateY(32px); }
+  .step-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 72px; font-weight: 300; line-height: 1;
+    color: rgba(245,239,224,0.07); margin-bottom: 16px;
+    letter-spacing: -2px;
+  }
+  .step-icon-wrap {
+    width: 48px; height: 48px; background: var(--smoke);
+    border: 1px solid rgba(201,74,26,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 20px;
+    transition: border-color .3s, background .3s;
+  }
+  .step-item:hover .step-icon-wrap { border-color: var(--ember); background: rgba(201,74,26,0.1); }
+  .step-name {
+    font-size: 13px; font-weight: 500; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--cream); margin-bottom: 10px;
+  }
+  .step-desc { font-size: 12px; line-height: 1.8; color: rgba(245,239,224,0.4); }
+
+  /* FULLSCREEN MIDDLE CTA */
+  .cta-section {
+    position: relative;
+    width: 100vw; height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; background: var(--smoke);
+  }
+  .cta-bg-circle {
+    position: absolute;
+    width: 900px; height: 900px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,74,26,0.1);
+    will-change: transform;
+  }
+  .cta-bg-circle:nth-child(2) {
+    width: 650px; height: 650px;
+    border-color: rgba(201,74,26,0.15);
+  }
+  .cta-bg-circle:nth-child(3) {
+    width: 400px; height: 400px;
+    border-color: rgba(201,74,26,0.2);
+  }
+  .cta-content { position: relative; z-index: 2; text-align: center; }
+  .cta-h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 7vw, 96px);
+    font-weight: 300; line-height: 0.95; letter-spacing: -2px;
+    opacity: 0; transform: translateY(30px);
+  }
+  .cta-h2 em { font-style: italic; color: var(--ember); }
+  .cta-sub {
+    margin: 28px auto 0; max-width: 420px;
+    font-size: 13px; line-height: 1.8; color: rgba(245,239,224,0.4);
+    opacity: 0; transform: translateY(16px);
+  }
+  .cta-actions {
+    margin-top: 48px; display: flex; gap: 16px; justify-content: center;
+    opacity: 0; transform: translateY(16px);
+  }
+  .cta-input {
+    background: rgba(245,239,224,0.05);
+    border: 1px solid rgba(245,239,224,0.12);
+    color: var(--cream); font-family: 'Syne', sans-serif;
+    font-size: 12px; letter-spacing: 1px;
+    padding: 14px 20px; width: 260px; outline: none;
+    transition: border-color .3s;
+  }
+  .cta-input::placeholder { color: rgba(245,239,224,0.25); }
+  .cta-input:focus { border-color: var(--ember); }
+  .cta-pizza-bg {
+    position: absolute; font-size: 320px;
+    opacity: 0.04; user-select: none;
+    will-change: transform;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 80px 48px 40px;
+    border-top: 1px solid rgba(245,239,224,0.06);
+  }
+  .footer-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 60px;
+  }
+  .footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px; font-weight: 600; letter-spacing: 3px;
+    color: var(--cream); text-transform: uppercase;
+  }
+  .footer-logo em { color: var(--ember); font-style: italic; }
+  .footer-tagline {
+    font-size: 12px; color: rgba(245,239,224,0.3);
+    margin-top: 8px; letter-spacing: 1px;
+  }
+  .footer-nav { display: flex; gap: 60px; }
+  .footer-col h5 {
+    font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--ember); margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col a {
+    font-size: 12px; color: rgba(245,239,224,0.4); text-decoration: none;
+    transition: color .2s; cursor: none;
+  }
+  .footer-col a:hover { color: var(--cream); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 24px; border-top: 1px solid rgba(245,239,224,0.05);
+  }
+  .footer-copy { font-size: 11px; color: rgba(245,239,224,0.2); letter-spacing: 1px; }
+  .footer-socials { display: flex; gap: 24px; }
+  .footer-socials a {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(245,239,224,0.3); text-decoration: none; transition: color .2s; cursor: none;
+  }
+  .footer-socials a:hover { color: var(--ember); }
+
+  /* SCROLL PROGRESS */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--ember); z-index: 200; transform-origin: left;
+    transform: scaleX(0); transition: transform .05s;
+  }
+
+  html { scroll-behavior: auto; }
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+<div id="progress-bar"></div>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <div class="nav-logo">Pizza<em>Co</em></div>
+  <ul class="nav-links">
+    <li><a href="#">Menu</a></li>
+    <li><a href="#">Build</a></li>
+    <li><a href="#">Track</a></li>
+    <li><a href="#">Story</a></li>
+  </ul>
+  <button class="nav-cta">Order now</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grain"></div>
+  <div class="hero-circle-ring" id="ring-outer"></div>
+  <div class="hero-circle" id="hero-circle">
+    <div class="hero-circle-inner" id="hero-pizza">🍕</div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow" id="he-eyebrow">Artisan pizza — delivered</p>
+    <h1 class="hero-h1" id="he-h1">Craft your<br><em>perfect</em><br>slice</h1>
+    <p class="hero-sub" id="he-sub">Choose every layer. Your base, your sauce, your cheese, your toppings. Hot, handmade, and at your door in 30 minutes.</p>
+    <div class="hero-actions" id="he-actions">
+      <button class="btn-ember">Start building</button>
+      <button class="btn-ghost-text">View menu</button>
+    </div>
+  </div>
+  <div class="hero-scroll-hint" id="scroll-hint">
+    <span class="scroll-line"></span>
+    Scroll
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <span class="marquee-item"><span class="marquee-dot"></span> Wood-fired quality</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> 30-minute delivery</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Build your own</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Premium ingredients</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> 5,200+ orders</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Rated 4.9 stars</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Wood-fired quality</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> 30-minute delivery</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Build your own</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Premium ingredients</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> 5,200+ orders</span>
+    <span class="marquee-item"><span class="marquee-dot"></span> Rated 4.9 stars</span>
+  </div>
+</div>
+
+<!-- PHILOSOPHY -->
+<section style="background: var(--ink); overflow: hidden;">
+  <div class="philosophy">
+    <div class="phil-left">
+      <span class="overline" id="phil-over">Our craft</span>
+      <h2 class="phil-h2" id="phil-h2">Made with<br><em>obsession,</em><br>not shortcuts.</h2>
+    </div>
+    <div class="phil-right" id="phil-right">
+      <p class="phil-body">Every pizza starts with a choice. We give you five bases, five sauces, four cheeses, and a garden of toppings — because the best pizza is the one you designed. Our kitchen moves fast. Your standards shouldn't.</p>
+      <div class="phil-stats">
+        <div>
+          <div class="phil-stat-num">5k+</div>
+          <div class="phil-stat-label">Pizzas delivered</div>
+          <div class="phil-stat-line"></div>
+        </div>
+        <div>
+          <div class="phil-stat-num">4.9</div>
+          <div class="phil-stat-label">Average rating</div>
+          <div class="phil-stat-line"></div>
+        </div>
+        <div>
+          <div class="phil-stat-num">30m</div>
+          <div class="phil-stat-label">Avg delivery</div>
+          <div class="phil-stat-line"></div>
+        </div>
+        <div>
+          <div class="phil-stat-num">100%</div>
+          <div class="phil-stat-label">Fresh daily</div>
+          <div class="phil-stat-line"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="menu-section">
+  <div class="menu-header">
+    <h2 class="menu-h2" id="menu-h2">Our most<br><em style="font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--gold)">loved</em> pizzas</h2>
+    <a href="#" class="menu-see-all" id="menu-all">See full menu</a>
+  </div>
+  <div class="menu-cards">
+    <div class="menu-card" id="mc1">
+      <div class="menu-card-bg">🍕</div>
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-content">
+        <div class="menu-card-name">Margherita Classic</div>
+        <div class="menu-card-price">₹ 299</div>
+        <div class="menu-card-tags">
+          <span class="tag-pill">Veg</span>
+          <span class="tag-pill">Thin crust</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="mc2">
+      <div class="menu-card-bg">🍖</div>
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-content">
+        <div class="menu-card-name">BBQ Chicken Fiesta</div>
+        <div class="menu-card-price">₹ 449</div>
+        <div class="menu-card-tags">
+          <span class="tag-pill hot">Spicy</span>
+          <span class="tag-pill">Thick crust</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="mc3">
+      <div class="menu-card-bg">🧀</div>
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-content">
+        <div class="menu-card-name">Four Cheese Dream</div>
+        <div class="menu-card-price">₹ 399</div>
+        <div class="menu-card-tags">
+          <span class="tag-pill">Veg</span>
+          <span class="tag-pill">Cheesy</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="mc4">
+      <div class="menu-card-bg">🌶️</div>
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-content">
+        <div class="menu-card-name">Peri Peri Paneer</div>
+        <div class="menu-card-price">₹ 379</div>
+        <div class="menu-card-tags">
+          <span class="tag-pill hot">Hot</span>
+          <span class="tag-pill">Veg</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-card" id="mc5">
+      <div class="menu-card-bg">🥩</div>
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-content">
+        <div class="menu-card-name">Meat Lovers Supreme</div>
+        <div class="menu-card-price">₹ 529</div>
+        <div class="menu-card-tags">
+          <span class="tag-pill hot">Spicy</span>
+          <span class="tag-pill">Stuffed crust</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process-section" style="max-width:100%; padding: 160px 48px;">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="process-header">
+      <h2 class="process-h2" id="proc-h2">From craving<br>to doorstep</h2>
+      <p class="process-intro" id="proc-intro">Four simple steps between you and the pizza you actually want. No defaults, no compromises — just how you imagined it.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item" id="si1">
+        <div class="step-number">01</div>
+        <div class="step-icon-wrap">👤</div>
+        <div class="step-name">Create account</div>
+        <div class="step-desc">Sign up and verify your email. Takes under a minute — you won't even remember doing it.</div>
+      </div>
+      <div class="step-item" id="si2">
+        <div class="step-number">02</div>
+        <div class="step-icon-wrap">🍕</div>
+        <div class="step-name">Build your pizza</div>
+        <div class="step-desc">Choose base, sauce, cheese, veggies, and meat across our custom step-by-step builder.</div>
+      </div>
+      <div class="step-item" id="si3">
+        <div class="step-number">03</div>
+        <div class="step-icon-wrap">💳</div>
+        <div class="step-name">Pay securely</div>
+        <div class="step-desc">Razorpay checkout. Fast, encrypted, and done in two taps — card, UPI, or wallet.</div>
+      </div>
+      <div class="step-item" id="si4">
+        <div class="step-number">04</div>
+        <div class="step-icon-wrap">🛵</div>
+        <div class="step-name">Track live</div>
+        <div class="step-desc">Watch your order move from kitchen to your door. Real-time status, no guessing.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FULLSCREEN CTA -->
+<section class="cta-section" id="cta-sec">
+  <div class="cta-bg-circle"></div>
+  <div class="cta-bg-circle"></div>
+  <div class="cta-bg-circle"></div>
+  <div class="cta-pizza-bg" id="cta-pizza">🍕</div>
+  <div class="cta-content">
+    <h2 class="cta-h2" id="cta-h2">Your first order.<br><em>20% off.</em></h2>
+    <p class="cta-sub" id="cta-sub">Drop your email and we'll send a promo code instantly. No spam, just pizza.</p>
+    <div class="cta-actions" id="cta-actions">
+      <input class="cta-input" type="email" placeholder="your@email.com" />
+      <button class="btn-ember">Claim offer</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">Pizza<em>Co</em></div>
+      <div class="footer-tagline">Crafted for you. Delivered with care.</div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <h5>Order</h5>
+        <ul>
+          <li><a href="#">Build your pizza</a></li>
+          <li><a href="#">View menu</a></li>
+          <li><a href="#">Track order</a></li>
+          <li><a href="#">Cart</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Account</h5>
+        <ul>
+          <li><a href="#">Sign up</a></li>
+          <li><a href="#">Log in</a></li>
+          <li><a href="#">Dashboard</a></li>
+          <li><a href="#">Admin</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">Our story</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 PizzaCo — All rights reserved</span>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">Twitter</a>
+      <a href="#">Zomato</a>
+    </div>
+  </div>
+</footer>
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ── Pure GSAP smooth scroll (replaces Lenis) ── */
+(function() {
+  let target = 0, current = 0, ease = 0.072, rafId;
+  const body = document.body;
+  const html = document.documentElement;
+
+  function getMax() {
+    return body.scrollHeight - window.innerHeight;
+  }
+
+  body.style.cssText = 'position:fixed;top:0;left:0;width:100%;overflow:hidden;';
+  const proxy = document.createElement('div');
+  proxy.style.cssText = 'position:fixed;top:0;left:0;width:1px;pointer-events:none;';
+  document.body.appendChild(proxy);
+
+  const scroller = document.createElement('div');
+  scroller.id = '__scroll_height__';
+  scroller.style.cssText = 'position:absolute;top:0;left:0;width:1px;';
+  document.body.appendChild(scroller);
+
+  function setHeight() {
+    scroller.style.height = (body.scrollHeight + window.innerHeight) + 'px';
+    html.style.height = scroller.style.height;
+  }
+  setHeight();
+  window.addEventListener('resize', setHeight);
+
+  window.addEventListener('wheel', e => {
+    target = Math.max(0, Math.min(target + e.deltaY, getMax()));
+  }, { passive: true });
+
+  let touchY = 0;
+  window.addEventListener('touchstart', e => { touchY = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener('touchmove', e => {
+    const dy = touchY - e.touches[0].clientY;
+    touchY = e.touches[0].clientY;
+    target = Math.max(0, Math.min(target + dy, getMax()));
+  }, { passive: true });
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function tick() {
+    current = lerp(current, target, ease);
+    if (Math.abs(target - current) < 0.05) current = target;
+    body.style.transform = `translateY(${-current}px)`;
+
+    const progress = current / Math.max(1, getMax());
+    const bar = document.getElementById('progress-bar');
+    if (bar) bar.style.transform = `scaleX(${progress})`;
+
+    ScrollTrigger.update();
+    rafId = requestAnimationFrame(tick);
+  }
+  tick();
+
+  ScrollTrigger.scrollerProxy(document.body, {
+    scrollTop(v) {
+      if (arguments.length) { target = v; current = v; }
+      return current;
+    },
+    getBoundingClientRect() {
+      return { top:0, left:0, width: window.innerWidth, height: window.innerHeight };
+    },
+    pinType: 'transform'
+  });
+  ScrollTrigger.defaults({ scroller: document.body });
+  ScrollTrigger.addEventListener('refresh', setHeight);
+  ScrollTrigger.refresh();
+})();
+
+/* ── Scroll progress bar ── */
+const bar = document.getElementById('progress-bar');
+
+/* ── Custom cursor ── */
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+window.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  cur.style.left = mx + 'px'; cur.style.top = my + 'px';
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+})();
+
+/* ── NAV fade on scroll ── */
+ScrollTrigger.create({
+  start: 80,
+  onEnter: () => gsap.to('#main-nav', { backgroundColor: 'rgba(26,18,8,0.92)', backdropFilter:'blur(12px)', duration:.4 }),
+  onLeaveBack: () => gsap.to('#main-nav', { backgroundColor: 'transparent', backdropFilter:'blur(0px)', duration:.4 }),
+});
+
+/* ── HERO entrance ── */
+const heroTl = gsap.timeline({ delay: 0.2 });
+heroTl
+  .to('#he-eyebrow',  { opacity:1, y:0, duration:1,   ease:'power3.out' })
+  .to('#he-h1',       { opacity:1, y:0, duration:1.2, ease:'power3.out' }, '-=0.6')
+  .to('#he-sub',      { opacity:1, y:0, duration:1,   ease:'power3.out' }, '-=0.7')
+  .to('#he-actions',  { opacity:1, y:0, duration:1,   ease:'power3.out' }, '-=0.6')
+  .to('#scroll-hint', { opacity:1, duration:1 }, '-=0.3');
+
+/* ── Hero parallax on scroll ── */
+gsap.to('#hero-circle', {
+  yPercent: 25, ease:'none',
+  scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub:1.2 }
+});
+gsap.to('#hero-pizza', {
+  rotate: 40, ease:'none',
+  scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub:2 }
+});
+gsap.to('#ring-outer', {
+  yPercent: 15, scale:1.06, ease:'none',
+  scrollTrigger: { trigger:'#hero', start:'top top', end:'bottom top', scrub:1.8 }
+});
+gsap.to('.hero-content', {
+  yPercent: -20, opacity:0, ease:'none',
+  scrollTrigger: { trigger:'#hero', start:'40% top', end:'bottom top', scrub:1 }
+});
+
+/* ── Philosophy section ── */
+gsap.to('#phil-over', { opacity:1, x:0, duration:1, ease:'power3.out',
+  scrollTrigger: { trigger:'#phil-over', start:'top 82%' } });
+gsap.to('#phil-h2', { opacity:1, y:0, duration:1.2, ease:'power3.out',
+  scrollTrigger: { trigger:'#phil-h2', start:'top 80%' } });
+gsap.to('#phil-right', { opacity:1, y:0, duration:1.2, ease:'power3.out',
+  scrollTrigger: { trigger:'#phil-right', start:'top 80%' } });
+
+/* ── Menu section ── */
+gsap.to('#menu-h2', { opacity:1, y:0, duration:1, ease:'power3.out',
+  scrollTrigger: { trigger:'#menu-h2', start:'top 82%' } });
+gsap.to('#menu-all', { opacity:1, duration:.8,
+  scrollTrigger: { trigger:'#menu-h2', start:'top 82%' } });
+
+['#mc1','#mc2','#mc3','#mc4','#mc5'].forEach((id, i) => {
+  gsap.to(id, { opacity:1, y:0, duration:1, ease:'power3.out', delay: i * 0.1,
+    scrollTrigger: { trigger:'#mc1', start:'top 80%' } });
+});
+
+/* ── Process section ── */
+gsap.to('#proc-h2', { opacity:1, y:0, duration:1, ease:'power3.out',
+  scrollTrigger: { trigger:'#proc-h2', start:'top 80%' } });
+gsap.to('#proc-intro', { opacity:1, y:0, duration:1, ease:'power3.out', delay:.1,
+  scrollTrigger: { trigger:'#proc-intro', start:'top 80%' } });
+
+['#si1','#si2','#si3','#si4'].forEach((id, i) => {
+  gsap.to(id, { opacity:1, y:0, duration:1, ease:'power3.out', delay: i * 0.15,
+    scrollTrigger: { trigger:'#si1', start:'top 80%' } });
+});
+
+/* ── CTA section ── */
+gsap.to('#cta-pizza', {
+  rotate: 60, scale:1.1, ease:'none',
+  scrollTrigger: { trigger:'#cta-sec', start:'top bottom', end:'bottom top', scrub:2 }
+});
+gsap.to('#cta-h2', { opacity:1, y:0, duration:1.2, ease:'power3.out',
+  scrollTrigger: { trigger:'#cta-sec', start:'top 70%' } });
+gsap.to('#cta-sub', { opacity:1, y:0, duration:1, ease:'power3.out', delay:.15,
+  scrollTrigger: { trigger:'#cta-sec', start:'top 70%' } });
+gsap.to('#cta-actions', { opacity:1, y:0, duration:1, ease:'power3.out', delay:.25,
+  scrollTrigger: { trigger:'#cta-sec', start:'top 70%' } });
+
+/* ── CTA rings slow rotation ── */
+const ctaRings = document.querySelectorAll('.cta-bg-circle');
+ctaRings.forEach((r, i) => {
+  gsap.to(r, {
+    rotate: 360 * (i%2===0 ? 1 : -1),
+    duration: 40 + i * 10,
+    repeat: -1, ease:'none'
+  });
+});
+</script>
+</body>
+</html>

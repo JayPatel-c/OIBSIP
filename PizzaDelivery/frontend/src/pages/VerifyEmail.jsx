@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const VerifyEmail = () => {
   const { token } = useParams();
@@ -8,6 +9,7 @@ const VerifyEmail = () => {
   const [status, setStatus] = useState('verifying'); // verifying, success, error
   const [errorMsg, setErrorMsg] = useState('');
   const verificationStarted = useRef(false);
+  useScrollReveal();
 
   useEffect(() => {
     // Prevent double-fetching in React StrictMode development environments
@@ -35,7 +37,7 @@ const VerifyEmail = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card text-center" style={{ padding: '40px' }}>
+      <div className="auth-card scroll-reveal-scale text-center" style={{ padding: '40px' }}>
         {status === 'verifying' && (
           <div className="flex-center" style={{ flexDirection: 'column', gap: '20px' }}>
             <div className="spinner"></div>

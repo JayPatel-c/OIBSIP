@@ -39,3 +39,10 @@ pnpm-debug.log*
 lerna-debug.log*
 logs/
 *.log
+
+# Caching & Vite
+.vite/
+dist-ssr/
+.eslintcache
+.npm/
+coverage/

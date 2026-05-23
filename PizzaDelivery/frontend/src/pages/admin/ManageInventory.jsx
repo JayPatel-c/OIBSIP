@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 const ManageInventory = () => {
   const [inventory, setInventory] = useState([]);
@@ -10,6 +11,7 @@ const ManageInventory = () => {
   // Custom adjust stock state
   const [adjustingId, setAdjustingId] = useState(null);
   const [adjustAmount, setAdjustAmount] = useState(10);
+  useScrollReveal();
 
   const fetchInventory = async () => {
     try {
@@ -51,7 +53,7 @@ const ManageInventory = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <div style={{ marginBottom: '35px' }}>
+      <div className="scroll-reveal" style={{ marginBottom: '35px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px' }}>
           Manage Store Inventory
         </h1>
@@ -69,7 +71,7 @@ const ManageInventory = () => {
           <p style={{ color: 'var(--text-secondary)' }}>Loading inventory records...</p>
         </div>
       ) : (
-        <div className="card" style={{ overflowX: 'auto', padding: '10px 20px' }}>
+        <div className="card scroll-reveal" data-delay="100" style={{ overflowX: 'auto', padding: '10px 20px' }}>
           <table className="admin-table">
             <thead>
               <tr>

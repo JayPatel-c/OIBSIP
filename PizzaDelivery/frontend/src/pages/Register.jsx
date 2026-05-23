@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -13,6 +14,7 @@ const Register = () => {
   const [emailSent, setEmailSent] = useState(false);
   const [loadingLocal, setLoadingLocal] = useState(false);
   const { register } = useAuth();
+  useScrollReveal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,10 +40,10 @@ const Register = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
+      <div className="auth-card scroll-reveal-scale">
         {success ? (
           <div className="auth-success-state" style={{ textAlign: 'center', padding: '10px 0' }}>
-            <div className="success-icon-wrapper" style={{
+            <div className="success-icon-wrapper animate-float" style={{
               width: '80px',
               height: '80px',
               borderRadius: '50%',

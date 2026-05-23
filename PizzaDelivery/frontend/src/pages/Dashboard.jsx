@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const Dashboard = () => {
   const [pizzas, setPizzas] = useState([]);
@@ -8,6 +9,7 @@ const Dashboard = () => {
   const [error, setError] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
   const navigate = useNavigate();
+  useScrollReveal();
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -48,7 +50,7 @@ const Dashboard = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <div className="flex-between" style={{ marginBottom: '30px', flexWrap: 'wrap', gap: '20px' }}>
+      <div className="flex-between scroll-reveal" style={{ marginBottom: '30px', flexWrap: 'wrap', gap: '20px' }}>
         <div>
           <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px' }}>
             Pizza Varieties
@@ -65,7 +67,7 @@ const Dashboard = () => {
       </div>
 
       {/* Category filters */}
-      <div className="filter-bar" style={{ marginBottom: '30px' }}>
+      <div className="filter-bar scroll-reveal" data-delay="100" style={{ marginBottom: '30px' }}>
         {['All', 'Veg', 'Non-Veg'].map((cat) => (
           <button
             key={cat}
@@ -94,9 +96,13 @@ const Dashboard = () => {
       )}
 
       {!loading && !error && filteredPizzas.length > 0 && (
-        <div className="pizza-grid">
-          {filteredPizzas.map((pizza) => (
-            <div key={pizza._id} className="pizza-card card animate-fade-in">
+        <div className="pizza-grid stagger-children">
+          {filteredPizzas.map((pizza, index) => (
+            <div
+              key={pizza._id}
+              className="pizza-card card card-animated scroll-reveal-scale"
+              data-delay={index * 100}
+            >
               <div className="pizza-image-container">
                 <img
                   src={pizza.image || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&q=80&w=600'}

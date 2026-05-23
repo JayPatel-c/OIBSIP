@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  useScrollReveal();
 
   const fetchAllOrders = async () => {
     try {
@@ -41,7 +43,7 @@ const ManageOrders = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <div style={{ marginBottom: '35px' }}>
+      <div className="scroll-reveal" style={{ marginBottom: '35px' }}>
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px' }}>
           Manage Pizza Orders Panel
         </h1>
@@ -65,8 +67,8 @@ const ManageOrders = () => {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
-          {orders.map((order) => (
-            <div key={order._id} className="order-tracker-card card animate-fade-in" style={{ borderLeft: `4px solid ${order.status === 'Delivered' ? '#48bb78' : '#319795'}` }}>
+          {orders.map((order, index) => (
+            <div key={order._id} className="order-tracker-card card card-animated animate-cascade" style={{ borderLeft: `4px solid ${order.status === 'Delivered' ? '#48bb78' : '#319795'}`, animationDelay: `${index * 0.1}s` }}>
               <div className="flex-between" style={{ flexWrap: 'wrap', gap: '15px', borderBottom: '1px solid var(--border)', paddingBottom: '15px', marginBottom: '15px' }}>
                 <div>
                   <h4 style={{ fontWeight: 600 }}>

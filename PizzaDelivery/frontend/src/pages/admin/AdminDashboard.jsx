@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../../api/axios';
+import useScrollReveal from '../../hooks/useScrollReveal';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({ ordersCount: 0, revenue: 0, lowStockCount: 0 });
   const [lowStockItems, setLowStockItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  useScrollReveal();
 
   useEffect(() => {
     const fetchAdminStats = async () => {
@@ -42,7 +44,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <div style={{ marginBottom: '35px' }}>
+      <div className="scroll-reveal" style={{ marginBottom: '35px' }}>
         <span className="badge badge-admin" style={{ marginBottom: '10px' }}>Store Admin Workspace</span>
         <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px' }}>
           Admin Management Hub
@@ -62,8 +64,8 @@ const AdminDashboard = () => {
       {!loading && (
         <div>
           {/* Stats Grid */}
-          <div className="admin-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
-            <div className="card text-center" style={{ padding: '25px' }}>
+          <div className="admin-stats-grid stagger-children" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+            <div className="card card-animated text-center scroll-reveal-scale" style={{ padding: '25px' }}>
               
               <h3 style={{ fontSize: '28px', color: 'var(--text-highlight)' }}>{stats.ordersCount}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Total Orders Placed</p>
@@ -73,7 +75,7 @@ const AdminDashboard = () => {
               <h3 style={{ fontSize: '28px', color: 'var(--text-highlight)' }}>₹{stats.revenue}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Store Gross Revenue</p>
             </div>
-            <div className="card text-center" style={{ padding: '25px', border: stats.lowStockCount > 0 ? '1px solid var(--danger)' : '1px solid var(--border)' }}>
+            <div className="card card-animated text-center scroll-reveal-scale" style={{ padding: '25px', border: stats.lowStockCount > 0 ? '1px solid var(--danger)' : '1px solid var(--border)' }}>
               
               <h3 style={{ fontSize: '28px', color: stats.lowStockCount > 0 ? 'var(--danger)' : 'var(--text-highlight)' }}>
                 {stats.lowStockCount}
@@ -84,7 +86,7 @@ const AdminDashboard = () => {
 
           <div className="builder-grid" style={{ gridTemplateColumns: '1.5fr 1fr' }}>
             {/* Quick Actions Panel */}
-            <div className="card" style={{ padding: '30px' }}>
+            <div className="card scroll-reveal-left" data-delay="200" style={{ padding: '30px' }}>
               <h3 style={{ marginBottom: '25px', borderBottom: '1px solid var(--border)', paddingBottom: '15px' }}>
                 Quick Hub Navigations
               </h3>
@@ -118,7 +120,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Critical Stock Alert Dashboard */}
-            <div className="card" style={{ padding: '30px', border: stats.lowStockCount > 0 ? '1px dashed var(--danger)' : '1px solid var(--border)' }}>
+            <div className="card scroll-reveal-right" data-delay="300" style={{ padding: '30px', border: stats.lowStockCount > 0 ? '1px dashed var(--danger)' : '1px solid var(--border)' }}>
               <h3 style={{ marginBottom: '20px', color: stats.lowStockCount > 0 ? 'var(--danger)' : 'var(--text-primary)' }}>
                 Low Stock Alerts
               </h3>

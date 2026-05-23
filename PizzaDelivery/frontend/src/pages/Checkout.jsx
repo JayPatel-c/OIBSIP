@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const Checkout = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  useScrollReveal();
   
   // Retrieve checkout items passed from menu or builder state
   const { orderItems, totalAmount } = location.state || { orderItems: [], totalAmount: 0 };
@@ -197,12 +199,12 @@ const Checkout = () => {
 
   return (
     <div className="container" style={{ padding: '40px 20px', minHeight: '80vh' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px', marginBottom: '30px' }}>
+      <h1 className="scroll-reveal" style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '32px', marginBottom: '30px' }}>
         Checkout Order
       </h1>
 
       {success && (
-        <div className="alert alert-success text-center animate-fade-in" style={{ padding: '40px', maxWidth: '600px', margin: '0 auto' }}>
+        <div className="alert alert-success text-center scroll-reveal-scale" style={{ padding: '40px', maxWidth: '600px', margin: '0 auto' }}>
           
           <h2 style={{ marginBottom: '10px' }}>Order Placed Successfully!</h2>
           <p style={{ color: 'var(--text-secondary)' }}>
@@ -217,7 +219,7 @@ const Checkout = () => {
       {!success && (
         <div className="checkout-grid">
           {/* Left Form: Delivery Address */}
-          <div className="checkout-address card">
+          <div className="checkout-address card scroll-reveal-left" data-delay="100">
             <h3 style={{ borderBottom: '1px solid var(--border)', paddingBottom: '15px', marginBottom: '20px' }}>
               Delivery Details
             </h3>
@@ -276,7 +278,7 @@ const Checkout = () => {
           </div>
 
           {/* Right Panel: Receipt Review */}
-          <div className="checkout-receipt card">
+          <div className="checkout-receipt card scroll-reveal-right" data-delay="200">
             <h3 style={{ borderBottom: '1px solid var(--border)', paddingBottom: '15px', marginBottom: '20px' }}>
               Order Review
             </h3>
